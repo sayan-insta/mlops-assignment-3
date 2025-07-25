@@ -1,0 +1,41 @@
+name: CI/CD Workflow
+
+on: [push]
+
+jobs:
+  build_and_test_container:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install Python dependencies
+        run: pip install scikit-learn joblib
+
+      - name: Train the model
+        run: python train.py
+
+      - name: Build Docker image
+        run: docker build -t mymodel:latest .
+
+      - name: Run Docker container
+        run: docker run mymodel:latest
+
+      - name: Log in to DockerHub
+        env:
+          USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo "$PASSWORD" | docker login -u "$USERNAME" --password-stdin
+
+      - name: Push Docker image to DockerHub
+        run: |
+          docker tag mymodel:latest ${{ secrets.DOCKERHUB_USERNAME }}/mlops-model:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/mlops-model:latest
+
