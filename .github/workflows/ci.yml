@@ -36,6 +36,6 @@ jobs:
 
       - name: Push Docker image to DockerHub
         run: |
-          docker tag mymodel:latest ${{ secrets.DOCKERHUB_USERNAME }}/mlops-model:latest
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/mlops-model:latest
+          docker tag mymodel:latest ${{ secrets.DOCKER_USERNAME }}/mlops-model:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/mlops-model:latest
 
